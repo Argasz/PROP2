@@ -24,5 +24,5 @@
 (def b (safe (/ 1 0)))
 (println (macroexpand '(safe [s (FileReader. (File. "file.txt"))] (.skip s 55))))
 
-(def v (safe [s (FileReader. (File. "file.txt"))] (. s (skip -55))))
+(def v (safe [s (FileReader. (File. "file.txt"))] (. s (.read s))))
 (println v)

@@ -15,14 +15,24 @@
                   (do
                     (if (instance? Closeable ~(nth vec 0))
                       (.close ~(nth vec 0)))
-                    e#)))
-           )
+                    e#))))
          (catch Exception e#
            e#)))
   )
 
-(def b (safe (/ 1 0)))
-(println (macroexpand '(safe [s (FileReader. (File. "file.txt"))] (.skip s 55))))
-
-(def v (safe [s (FileReader. (File. "file.txt"))] (. s (.read s))))
-(println v)
+(defn safeFn ([vec expr]
+              (def ret `(try (let ~(vector (nth vec 0) (nth vec 1))
+                               (try ~expr
+                                    (catch Exception e#
+                                      (do
+                                        (if (instance? Closeable ~(nth vec 0))
+                                          (.close ~(nth vec 0)))
+                                        e#))
+                                    (catch Exception e#
+                                      e#)))))
+              (eval ret))
+  ([expr]
+   (def ret2 `(try ~expr
+        (catch Exception e#
+          e#)))
+    ret2))
